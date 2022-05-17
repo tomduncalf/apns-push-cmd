@@ -336,7 +336,8 @@ func main() {
 		if len(MdmPushMagic) > 0 {
 			body = []byte(fmt.Sprintf(`{"aps": {}, "mdm": "%s"}`, MdmPushMagic))
 		} else {
-			body = []byte(fmt.Sprintf(`{"aps": {"alert" : "%s", "sound": "default"}}`, PushAlertMessage))
+			// body = []byte(fmt.Sprintf(`{"aps": {"alert" : "%s", "sound": "default"}}`, PushAlertMessage))
+			body = []byte(fmt.Sprintf(`{"aps": {"content-available" : 1}}`))
 		}
 
 		req, err := http.NewRequest("POST", url, bytes.NewBuffer(body))
@@ -347,14 +348,15 @@ func main() {
 		if len(MdmPushMagic) > 0 {
 			req.Header.Set("apns-push-type", "mdm")
 		} else {
-			req.Header.Set("apns-push-type", "alert")
+			// req.Header.Set("apns-push-type", "alert")
+			req.Header.Set("apns-push-type", "background")
 		}
 
 		if len(bearerToken) > 0 {
 			req.Header.Set("authorization", fmt.Sprintf("bearer %s", bearerToken))
 		}
 		req.Header.Set("apns-expiration", "0")
-		//req.Header.Set("apns-priority", "10")
+		req.Header.Set("apns-priority", "5")
 		req.Header.Set("apns-topic", PushTopic)
 
 		return req
